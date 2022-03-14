@@ -1,9 +1,29 @@
 const express = require("express");
 const router = express.Router();
+const mysql = require("mysql");
+
+const con = mysql.createConnection({
+  host: "localhost",
+  user: "root",
+  password: "",
+  database: "test"
+});
 
 router.get("/", (req, res, nex) => {
-  res.status(200).json({
-    message: "User Get Middleware Works!..."
+  con.connect(err => {
+    if (err) throw err;
+
+    let sql = `CREATE TABLE users(
+      id int not null AUTO_INCREMENT,
+      name varchar(100),
+      username varchar(100),
+    PRIMARY KEY(id)
+      )`;
+    console.log(`Connected!`);
+    con.query(sql, (err, result) => {
+      if (err) throw err;
+      res.json({ message: result });
+    });
   });
 });
 
