@@ -9,24 +9,6 @@ const con = mysql.createConnection({
   database: "test"
 });
 
-router.get("/", (req, res, nex) => {
-  con.connect(err => {
-    if (err) throw err;
-
-    let sql = `CREATE TABLE users(
-      id int not null AUTO_INCREMENT,
-      name varchar(100),
-      username varchar(100),
-    PRIMARY KEY(id)
-      )`;
-    console.log(`Connected!`);
-    con.query(sql, (err, result) => {
-      if (err) throw err;
-      res.json({ message: result });
-    });
-  });
-});
-
 router.post("/", (req, res, nex) => {
   const user = {
     username: req.body.id,
