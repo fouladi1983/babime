@@ -14,7 +14,7 @@ app.use(bodyParser.json());
 
 ///////////////Routes
 app.use("/user", userRoutes);
-app.use("sql", sqlRoutes);
+app.use("/sql", sqlRoutes);
 //////////////
 
 app.use((req, res, next) => {

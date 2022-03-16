@@ -16,16 +16,16 @@ router.get("/create-tables", (req, res, nex) => {
     let sql = `CREATE TABLE users(
       id int not null AUTO_INCREMENT,
       name varchar(100),
-      username varchar(100),
+      email varchar(100),
+      password varchar(250),
     PRIMARY KEY(id)
       )`;
     con.query(sql, (err, result) => {
       if (err) throw err;
-      res.json({ message: result });
+      res.json({ result: result });
+      con.end();
     });
   });
-
-  con.end();
 });
 
 module.exports = router;
