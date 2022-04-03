@@ -25,19 +25,19 @@ router.post("/signup", (req, res, next) => {
         password: hash
       };
       if (!checkUserExist(user.email)) {
-        con.connect(err => {
+        // con.connect(err => {
+        //   if (err) throw err;
+
+        let sql = `insert into users(email,name,password) values('${user.email}', '${user.name}', '${user.password}')`;
+
+        con.query(sql, (err, result) => {
           if (err) throw err;
 
-          let sql = `insert into users(email,name,password) values(${user.email}, ${user.name}, ${user.password})`;
+          res.json({ result: result });
 
-          con.query(sql, (err, result) => {
-            if (err) throw err;
-
-            res.json({ result: result });
-
-            con.end();
-          });
+          con.end();
         });
+        // });
       } else {
         return res.status(409).json({
           message: `user with this email address laready exists`
@@ -51,13 +51,13 @@ function checkUserExist(email) {
   con.connect(err => {
     if (err) throw err;
 
-    let sql = `select id from users where email=${email}`;
+    let sql = `select id from users where email='${email}'`;
     con.query(sql, (err, result) => {
       if (err) throw err;
 
       if (result.fieldCount > 0) return true;
 
-      con.end();
+      //con.end();
 
       return false;
     });
@@ -90,6 +90,8 @@ router.post("/login", (req, res, next) => {
     });
   });
 });
+
+/**************************** */
 
 router.get("/:id", (req, res, next) => {
   const id = req.params.id;

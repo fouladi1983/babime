@@ -18,7 +18,7 @@ router.get("/create-tables", (req, res, nex) => {
       name varchar(100),
       email varchar(100),
       password varchar(250),
-    PRIMARY KEY(id)
+      PRIMARY KEY(id)
       )`;
     con.query(sql, (err, result) => {
       if (err) throw err;
