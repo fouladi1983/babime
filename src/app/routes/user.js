@@ -24,45 +24,26 @@ router.post("/signup", (req, res, next) => {
         email: req.body.email,
         password: hash
       };
-      if (!checkUserExist(user.email)) {
-        // con.connect(err => {
-        //   if (err) throw err;
 
-        let sql = `insert into users(email,name,password) values('${user.email}', '${user.name}', '${user.password}')`;
+      let sql = `select id from users where email='${user.email}'`;
+      con.query(sql, (err, result) => {
+        if (err) throw err;
 
-        con.query(sql, (err, result) => {
-          if (err) throw err;
-
-          res.json({ result: result });
-
-          con.end();
-        });
-        // });
-      } else {
-        return res.status(409).json({
-          message: `user with this email address laready exists`
-        });
-      }
+        if (result.length === 0) {
+          let sql = `insert into users(email,name,password) values('${user.email}', '${user.name}', '${user.password}')`;
+          con.query(sql, (err, result) => {
+            if (err) throw err;
+            res.status(200).json({ result: result });
+          });
+        } else {
+          return res.status(409).json({
+            message: `user with this email address laready exists`
+          });
+        }
+      });
     }
   });
 });
-
-function checkUserExist(email) {
-  con.connect(err => {
-    if (err) throw err;
-
-    let sql = `select id from users where email='${email}'`;
-    con.query(sql, (err, result) => {
-      if (err) throw err;
-
-      if (result.fieldCount > 0) return true;
-
-      //con.end();
-
-      return false;
-    });
-  });
-}
 /**************************** */
 
 router.post("/login", (req, res, next) => {
@@ -70,23 +51,18 @@ router.post("/login", (req, res, next) => {
     email: req.body.email,
     password: req.body.password
   };
-  con.connect(err => {
-    if (err) throw err;
 
-    let sql = `select * from users where email = ${user.email}`;
-
-    con.query(sql, (err, result) => {
-      if (err) throw err;
-      console.log(result);
-      bcrypt.compare(user.password, result[0].password, (err, result) => {
-        if (err) {
-          return res.status(401).json({
-            error: "user or password is incorrect"
-          });
-        } else if (result) {
-          return res.status(200).json({});
-        }
-      });
+  let sql = `select * from users where email = '${user.email}'`;
+  con.query(sql, (err, result) => {
+    //if (err) throw err;
+    bcrypt.compare(user.password, result[0].password, (err, result) => {
+      if (result != true) {
+        return res.status(401).json({
+          error: "user or password is incorrect"
+        });
+      } else {
+        return res.status(200).json({ message: `you are logged in` });
+      }
     });
   });
 });
