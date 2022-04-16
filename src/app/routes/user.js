@@ -2,6 +2,8 @@ const express = require("express");
 const router = express.Router();
 const mysql = require("mysql");
 const bcrypt = require("bcrypt");
+const jwt = require("jsonwebtoken");
+const environment = require(`../../environment.json`);
 
 const con = mysql.createConnection({
   host: "localhost",
@@ -22,18 +24,30 @@ router.post("/signup", (req, res, next) => {
       const user = {
         name: req.body.name,
         email: req.body.email,
-        password: hash
+        password: hash,
+        isAdmin: req.body.isAdmin
       };
 
       let sql = `select id from users where email='${user.email}'`;
       con.query(sql, (err, result) => {
-        if (err) throw err;
+        if (err) return res.status(500).json({ error: err });
 
         if (result.length === 0) {
           let sql = `insert into users(email,name,password) values('${user.email}', '${user.name}', '${user.password}')`;
           con.query(sql, (err, result) => {
-            if (err) throw err;
-            res.status(200).json({ result: result });
+            if (err) return res.status(500).json({ error: err });
+            let adminRoleQuery = `insert into roles(isAdmin, userId) values('1', '${result.insertId}')`;
+            let notAdminRoleQuery = `insert into roles(isAdmin, userId) values('0','${result.insertId}')`;
+            if (user.isAdmin) {
+              con.query(adminRoleQuery, (err, roleResult) => {
+                if (err) return res.status(500).json({ error: err });
+              });
+            } else {
+              con.query(notAdminRoleQuery, (err, roleResult) => {
+                if (err) return res.status(500).json({ error: err });
+              });
+            }
+            return res.status(200).json({ result: result });
           });
         } else {
           return res.status(409).json({
@@ -53,15 +67,28 @@ router.post("/login", (req, res, next) => {
   };
 
   let sql = `select * from users where email = '${user.email}'`;
-  con.query(sql, (err, result) => {
-    //if (err) throw err;
-    bcrypt.compare(user.password, result[0].password, (err, result) => {
-      if (result != true) {
+  con.query(sql, (err, userResult) => {
+    if (err) return res.status(500).json({ error: err });
+
+    if (userResult.length < 1)
+      return res.status(401).json({ message: `Auth Failed` });
+
+    bcrypt.compare(user.password, userResult[0].password, (err, cmpResult) => {
+      if (err) return res.json({ error: err });
+
+      if (cmpResult != true) {
         return res.status(401).json({
           error: "user or password is incorrect"
         });
       } else {
-        return res.status(200).json({ message: `you are logged in` });
+        const token = jwt.sign(
+          {
+            userId: userResult[0].id
+          },
+          environment.env.JWT_KEY,
+          { expiresIn: "2 days" }
+        );
+        return res.status(200).json({ token: token });
       }
     });
   });
