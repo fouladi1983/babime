@@ -12,8 +12,8 @@ const con = mysql.createConnection({
 router.get("/create-tables", (req, res, nex) => {
   let userTableQuery = `CREATE TABLE users(
       id int not null AUTO_INCREMENT,
-      name varchar(100),
-      email varchar(100),
+      name utf8_unicode_ci,
+      email utf8_unicode_ci,
       password varchar(250),
       PRIMARY KEY(id)
       )`;
