@@ -20,6 +20,23 @@ router.post("/", (req, res, next) => {
   });
 });
 
-router.patch();
+router.patch("/answer", (req, res, next) => {
+  const patchObj = {
+    answerId: req.params.id,
+    editedAnswer: req.body.answer
+  };
+
+  const patchAnswerQuery = `update answer
+                              set answer='${patchObj.editedAnswer}'
+                              where id='${patchObj.answerId}'`;
+
+  con.mysqlConnection.query(patchAnswerQuery, (err, result) => {
+    if (err) {
+      res.status(500).json({ error: err });
+    }
+
+    res.status(200).json({ message: `answer updated successfully` });
+  });
+});
 
 module.exports = router;
