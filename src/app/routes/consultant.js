@@ -34,4 +34,15 @@ router.post("/", (req, res, next) => {
   });
 });
 
+router.patch("/consultant", (req, res, next) => {
+  const patchObj = {
+    consultId: req.params.id,
+    editedConsult: req.body.consult
+  };
+  const consultPatchQuery = `update consultants
+                                set description='${patchObj.editedConsult}'
+                                where id='${patchObj.consultId}'`;
+  con.mysqlConnection.query();
+});
+
 module.exports = router;
