@@ -2,8 +2,8 @@ const express = require("express");
 const con = require("./db");
 const router = express.Router();
 
-router.get("/:id", (req, res, next) => {
-  const userId = req.params.userId;
+router.get("/user/:id", (req, res, next) => {
+  const userId = req.params.id;
   const query = `select * from consultants as con
                 join consultAnswers as ans
                 on ans.consultantId = con.id
