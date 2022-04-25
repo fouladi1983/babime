@@ -12,8 +12,8 @@ const con = mysql.createConnection({
 router.get("/create-tables", (req, res, nex) => {
   let userTableQuery = `CREATE TABLE users(
       id int not null AUTO_INCREMENT,
-      name utf8_unicode_ci,
-      email utf8_unicode_ci,
+      name varchar(255) COLLATE utf8_unicode_ci,
+      email varchar(255) COLLATE utf8_unicode_ci,
       password varchar(250),
       PRIMARY KEY(id)
       )`;
@@ -35,8 +35,8 @@ router.get("/create-tables", (req, res, nex) => {
   let consultantsTableQuery = `create table consultants(
     id int not null AUTO_INCREMENT,
     creatorId int,
-    title varchar(255),
-    description text,
+    title varchar(255) COLLATE utf8_unicode_ci,
+    description text COLLATE utf8_unicode_ci,
     PRIMARY KEY(id)
   )`;
 
@@ -48,7 +48,7 @@ router.get("/create-tables", (req, res, nex) => {
     id int not null AUTO_INCREMENT,
     insurerId int,
     consultantId int,
-    answer text,
+    answer text COLLATE utf8_unicode_ci,
     PRIMARY KEY(id)
   )`;
 

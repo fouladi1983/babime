@@ -5,7 +5,7 @@ const router = express.Router();
 router.get("/user/:id", (req, res, next) => {
   const userId = req.params.id;
   const query = `select * from consultants as con
-                join consultAnswers as ans
+                left join consultAnswers as ans
                 on ans.consultantId = con.id
                 where con.creatorId='${userId}'`;
   con.mysqlConnection.query(query, (err, result) => {
