@@ -15,19 +15,31 @@ router.get("/create-tables", (req, res, nex) => {
       name varchar(255) COLLATE utf8_unicode_ci,
       email varchar(255) COLLATE utf8_unicode_ci,
       password varchar(250),
+      insurerCode varchar(50),
       PRIMARY KEY(id)
       )`;
     con.query(userTableQuery, (err, usersResult) => {
         if (err) throw err;
     });
 
+    let resetPassword = `CREATE TABLE IF NOT EXISTS resetPassword(
+      id int not null AUTO_INCREMENT,
+      userId int not null,
+      resetPasswordKey varchar(20) NOT NULL DEFAULT UUID(),
+      PRIMARY KEY(id)
+    )`;
+
+    con.query(resetPassword, (err, resetPassResult) => {
+        if (err) throw err;
+    });
+
     let userActivation = `CREATE TABLE IF NOT EXISTS userActivation(
       id int not null AUTO_INCREMENT,
       userId int not null,
-      isActive binary DEFAULT 0,
+      isActive TINYINT DEFAULT 0,
       activationKey varchar(20) NOT NULL DEFAULT UUID(),
       PRIMARY KEY(id)
-    )`
+    )`;
 
     con.query(userActivation, (err, atcResult) => {
         if (err) throw err;
@@ -36,7 +48,7 @@ router.get("/create-tables", (req, res, nex) => {
     let roleTableQuery = `CREATE TABLE IF NOT EXISTS roles(
     id int not null AUTO_INCREMENT,
     userId int,
-    isAdmin binary,
+    isAdmin TINYINT DEFAULT 0,
     PRIMARY KEY(id)
   )`;
 
