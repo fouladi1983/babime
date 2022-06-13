@@ -5,10 +5,7 @@ const transporter = nodeMailer.createTransport({
     host: "smtp.gmail.com",
     port: 465,
     secure: true,
-    auth: {
-        user: 'l0rdl0ss.mr@gmail.com',
-        pass: 'esjpgfrtxzoviqtl',
-    },
+    auth: {},
     subject: 'فعالسازی حساب کاربری'
 });
 
